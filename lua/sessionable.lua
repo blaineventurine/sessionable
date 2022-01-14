@@ -84,15 +84,18 @@ end
 
 -- Saves the session, overriding if previously existing.
 function Sessionable.SaveSession(session_name, auto)
-  -- TODO: check if session name nil
-  -- if nil, try to use v:this_session
-  -- if that doesn't work throw an error
+  if session_name == nil or session_name == "" then
+    session_name = Sessionable.conf.session_name
+  end
   
   local pre_cmds = Sessionable.get_cmds("pre_save")
   run_hook_cmds(pre_cmds, "pre-save")
-  -- TODO: this won't work until the above TODO is resolved
-  -- vim.cmd("mks! " .. Sessionable.conf.session_dir  .. session_name)
-  -- TODO: reset session_file_path after saving in case name changed
+  vim.cmd("mks! " .. Sessionable.conf.session_dir  .. session_name)
+
+  if session_name ~= Sessionable.conf.session_name then
+    Sessionable.conf.session_name = session_name
+  end
+
   message_after_saving(Sessionable.session_file_path, auto)
   local post_cmds = Sessionable.get_cmds("post_save")
   run_hook_cmds(post_cmds, "post-save")
@@ -147,6 +150,7 @@ function Sessionable.CompleteSessions()
   return table.concat(session_names, "\n")
 end
 
+-- Deletes active session TODO: maybe pass in an optional session name to delete other than active?
 function Sessionable.DeleteSession()
   local pre_cmds = Sessionable.get_cmds("pre_delete")
   run_hook_cmds(pre_cmds, "pre-delete")
