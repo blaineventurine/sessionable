@@ -73,11 +73,9 @@ function Sessionable.get_session_dir()
   end
 
   local session_dir = vim.g["session_dir"] or Sessionable.conf.session_dir
-  print('get_session_dir session_dir: ', session_dir)
   Lib.init_dir(session_dir)
   Sessionable.conf.session_dir = Lib.validate_session_dir(session_dir)
   Sessionable.validated = true
-  print('SESSION DIR: ', Sessionable.conf.session_dir)
   return session_dir
 end
 
@@ -164,10 +162,7 @@ function Sessionable.DeleteSession(session_name)
   end
   -- if a session name is passed in, use it, otherwise use the surrent session
   session_name = session_name or Sessionable.session_name
-  print(Sessionable.get_session_dir())
-  print(session_name)
   Sessionable.session_file_path = string.format("%s%s", Sessionable.get_session_dir(), session_name)
-  print(Sessionable.session_file_path)
   local cmd = "silent! !rm " .. Sessionable.session_file_path
   local success, result = pcall(vim.cmd, cmd)
   if success then

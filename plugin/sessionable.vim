@@ -20,7 +20,7 @@ endfunction
 " Available commands
 command! -nargs=* SaveSession call LuaSaveSession(expand('<args>'))
 command! -nargs=* RestoreSession call LuaRestoreSession(expand('<args>'))
-command! -nargs=* -complete=custom,CompleteSessions DeleteSession call LuaDeleteSession(<f-args>)
+command! -nargs=* DeleteSession call LuaDeleteSession('<args>')
 command! -nargs=* DisableAutoSave call LuaDisableAutoSave()
 command! -nargs=* CreateGitSession call LuaCreateGitSession()
 " command! -nargs=0 SearchSession call LuaSearchSession()
