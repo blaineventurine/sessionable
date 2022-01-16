@@ -1,3 +1,5 @@
+-- TODO: add telescope plugin for sessions
+-- 
 local Lib = require "sessionable-library"
 
 local Sessionable = {
@@ -71,9 +73,11 @@ function Sessionable.get_session_dir()
   end
 
   local session_dir = vim.g["session_dir"] or Sessionable.conf.session_dir
+  print('get_session_dir session_dir: ', session_dir)
   Lib.init_dir(session_dir)
   Sessionable.conf.session_dir = Lib.validate_session_dir(session_dir)
   Sessionable.validated = true
+  print('SESSION DIR: ', Sessionable.conf.session_dir)
   return session_dir
 end
 
@@ -125,14 +129,14 @@ function Sessionable.RestoreSession(session_name)
     run_hook_cmds(post_cmds, "post-restore")
   end
 
-    Sessionable.session_file_path = string.format("%s%s", Sessionable.get_session_dir(), session_name)
-    if Lib.is_readable(Sessionable.session_file_path) then
-      Lib.logger.debug("isReadable, calling restore")
-      restore()
-      Sessionable.session_name = session_name
-    else
-      Lib.logger.debug("File not readable, not restoring session")
-    end
+  Sessionable.session_file_path = string.format("%s%s", Sessionable.get_session_dir(), session_name)
+  if Lib.is_readable(Sessionable.session_file_path) then
+    Lib.logger.debug("isReadable, calling restore")
+    restore()
+    Sessionable.session_name = session_name
+  else
+    Lib.logger.debug("File not readable, not restoring session")
+  end
 end
 
 function Sessionable.DisableAutoSave()
@@ -150,15 +154,20 @@ function Sessionable.CompleteSessions()
   return table.concat(session_names, "\n")
 end
 
--- Deletes active session TODO: maybe pass in an optional session name to delete other than active?
-function Sessionable.DeleteSession()
+function Sessionable.DeleteSession(session_name)
   local pre_cmds = Sessionable.get_cmds("pre_delete")
   run_hook_cmds(pre_cmds, "pre-delete")
 
-  if Sessionable.conf.auto_save_enabled then
+  -- make sure to disable autosave if we're deleting the active session
+  if Sessionable.conf.auto_save_enabled and session_name == nil then
     Sessionable.DisableAutoSave()
   end
-
+  -- if a session name is passed in, use it, otherwise use the surrent session
+  session_name = session_name or Sessionable.session_name
+  print(Sessionable.get_session_dir())
+  print(session_name)
+  Sessionable.session_file_path = string.format("%s%s", Sessionable.get_session_dir(), session_name)
+  print(Sessionable.session_file_path)
   local cmd = "silent! !rm " .. Sessionable.session_file_path
   local success, result = pcall(vim.cmd, cmd)
   if success then
@@ -170,4 +179,9 @@ function Sessionable.DeleteSession()
   end
 end
 
+
+function Sessionable.CreateGitSession()
+    -- TODO: something like git rev-parse --abbrev-ref HEAD to get current branch name?
+
+end
 return Sessionable

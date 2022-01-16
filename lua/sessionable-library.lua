@@ -8,7 +8,7 @@ local Lib = {
   Config = Config,
   _VIM_FALSE = 0,
   _VIM_TRUE = 1,
-  SESSION_DIR = nil,
+  session_dir = nil,
 }
 
 function Lib.setup(config)
@@ -71,7 +71,9 @@ function Lib.append_slash(str)
 end
 
 function Lib.validate_session_dir(session_dir)
-  if Lib.is_empty(session_dir) or vim.fn.expand(session_dir) == vim.fn.expand(Lib.SESSION_DIR) then
+  print('validate session_dir: ', session_dir)
+  if Lib.is_empty(session_dir) or vim.fn.expand(session_dir) == vim.fn.expand(Lib.session_dir) then
+    print('returning lib.session_dir: ', Lib.session_dir)
     return Lib.session_dir
   end
 
@@ -114,19 +116,19 @@ end
 
 function Lib.logger.debug(...)
   if Lib.conf.log_level == "debug" then
-    print(...)
+    print('DEBUG: ', ...)
   end
 end
 
 function Lib.logger.info(...)
   local valid_values = { "info", "debug" }
   if has_value(valid_values, Lib.conf.log_level) then
-    print(...)
+    print('INFO: ', ...)
   end
 end
 
 function Lib.logger.error(...)
-  error(...)
+  error('ERROR: ', ...)
 end
 
 return Lib
