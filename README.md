@@ -32,3 +32,15 @@ components.active[3][11] = {
   left_sep = ' '
 }
 ```
+
+## Commands 
+
+```lua
+:SaveSesson " saves the current session in the session_dir.
+:SaveSession mySessionName " creates a session in the session_dir and switches to it being the active session.
+:RestoreSession " restores a previously saved session by name.
+:DeleteSession " deletes currently active session 
+:DeleteSession mySessionName " deletes a session by name 
+:CreateGitSession " creates a new session named after the current branch
+:DisableAutoSave " turns off the autosave on exit functionality, will be overridden by the value passed into the config on next startup
+```

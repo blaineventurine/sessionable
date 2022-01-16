@@ -130,7 +130,9 @@ function Sessionable.RestoreSession(session_name)
     local post_cmds = Sessionable.get_cmds("post_restore")
     run_hook_cmds(post_cmds, "post-restore")
   end
+
   Sessionable.session_file_path = string.format("%s%s", Sessionable.get_session_dir(), session_name)
+
   if Lib.is_readable(Sessionable.session_file_path) then
     Lib.logger.debug("isReadable, calling restore")
     restore()
