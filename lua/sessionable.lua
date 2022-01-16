@@ -178,7 +178,8 @@ end
 
 
 function Sessionable.CreateGitSession()
-    -- TODO: something like git rev-parse --abbrev-ref HEAD to get current branch name?
-
+      local branch = vim.fn.system("git branch --show-current")
+      branch = branch:gsub("/", "-")
+      Sessionable.SaveSession(branch)
 end
 return Sessionable
