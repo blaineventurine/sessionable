@@ -101,6 +101,7 @@ function Sessionable.SaveSession(session_name, auto)
     Sessionable.session_name = session_name
   end
 
+  Sessionable.session_file_path = string.format("%s%s", Sessionable.get_session_dir(), session_name)
   message_after_saving(Sessionable.session_file_path, auto)
   local post_cmds = Sessionable.get_cmds("post_save")
   run_hook_cmds(post_cmds, "post-save")
@@ -176,10 +177,10 @@ function Sessionable.DeleteSession(session_name)
   end
 end
 
-
 function Sessionable.CreateGitSession()
       local branch = vim.fn.system("git branch --show-current")
       branch = branch:gsub("/", "-")
       Sessionable.SaveSession(branch)
 end
+
 return Sessionable
