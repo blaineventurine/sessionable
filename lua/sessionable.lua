@@ -180,9 +180,14 @@ function Sessionable.DeleteSession(session_name)
 end
 
 function Sessionable.CreateGitSession()
-      local branch = vim.fn.system("git branch --show-current")
-      branch = branch:gsub("/", "-")
-      Sessionable.SaveSession(branch)
+  local is_git_dir = vim.fn.system("[ -d .git ] && echo .git || git rev-parse --git-dir > /dev/null 2>&1")
+  if is_git_dir ~= nil and is_git_dir ~= "" then
+    local branch = vim.fn.system("git branch --show-current")
+    branch = branch:gsub("/", "-")
+    Sessionable.SaveSession(branch)
+  else
+    Lib.logger.error("ERROR: not in a git repo")
+  end
 end
 
 return Sessionable
