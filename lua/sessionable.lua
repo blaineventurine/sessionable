@@ -15,7 +15,7 @@ local Sessionable = {
 
 function Sessionable.setup(config)
   Sessionable.conf = Lib.Config.normalize(config, Sessionable.conf)
-  Lib.SESSION_DIR = Sessionable.conf.session_dir
+  Lib.session_dir = Sessionable.conf.session_dir
   Lib.setup {
     log_level = Sessionable.conf.log_level,
   }
