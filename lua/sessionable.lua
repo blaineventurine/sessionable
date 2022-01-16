@@ -82,11 +82,7 @@ function Sessionable.get_cmds(type)
 end
 
 function Sessionable.AutoSaveSession()
-  print('calling auto save')
-  print(Sessionable.conf.auto_save_enabled)
   if Sessionable.conf.auto_save_enabled then
-    print('auto save enabled')
-    print('name: ', Sessionable.session_name)
     Sessionable.SaveSession(Sessionable.session_name, true)
   end
 end
@@ -133,7 +129,6 @@ function Sessionable.RestoreSession(session_name)
     local post_cmds = Sessionable.get_cmds("post_restore")
     run_hook_cmds(post_cmds, "post-restore")
   end
-  print('Auto save enabled? ', Sessionable.conf.auto_save_enabled)
   Sessionable.session_file_path = string.format("%s%s", Sessionable.get_session_dir(), session_name)
   if Lib.is_readable(Sessionable.session_file_path) then
     Lib.logger.debug("isReadable, calling restore")
