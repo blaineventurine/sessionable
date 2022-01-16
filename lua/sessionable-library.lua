@@ -73,7 +73,6 @@ end
 function Lib.validate_session_dir(session_dir)
   print('validate session_dir: ', session_dir)
   if Lib.is_empty(session_dir) or vim.fn.expand(session_dir) == vim.fn.expand(Lib.session_dir) then
-    print('returning lib.session_dir: ', Lib.session_dir)
     return Lib.session_dir
   end
 

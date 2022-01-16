@@ -4,7 +4,6 @@ local Lib = require "sessionable-library"
 
 local Sessionable = {
   conf = {
-    auto_create_enabled = false,
     auto_save_enabled = true,
     enable_last_session = false,
     log_level = "info",
@@ -39,7 +38,6 @@ do
   end
 end
 
------- MAIN FUNCTIONS ------
 local function run_hook_cmds(cmds, hook_name)
   if not Lib.is_empty_table(cmds) then
     for _, cmd in ipairs(cmds) do
@@ -83,19 +81,28 @@ function Sessionable.get_cmds(type)
   return Sessionable.conf[type .. "_cmds"]
 end
 
+function Sessionable.AutoSaveSession()
+  print('calling auto save')
+  print(Sessionable.conf.auto_save_enabled)
+  if Sessionable.conf.auto_save_enabled then
+    print('auto save enabled')
+    print('name: ', Sessionable.session_name)
+    Sessionable.SaveSession(Sessionable.session_name, true)
+  end
+end
 
 -- Saves the session, overriding if previously existing.
 function Sessionable.SaveSession(session_name, auto)
   if session_name == nil or session_name == "" then
-    session_name = Sessionable.conf.session_name
+    session_name = Sessionable.session_name
   end
   
   local pre_cmds = Sessionable.get_cmds("pre_save")
   run_hook_cmds(pre_cmds, "pre-save")
   vim.cmd("mks! " .. Sessionable.conf.session_dir  .. session_name)
 
-  if session_name ~= Sessionable.conf.session_name then
-    Sessionable.conf.session_name = session_name
+  if session_name ~= Sessionable.session_name then
+    Sessionable.session_name = session_name
   end
 
   message_after_saving(Sessionable.session_file_path, auto)
@@ -126,7 +133,7 @@ function Sessionable.RestoreSession(session_name)
     local post_cmds = Sessionable.get_cmds("post_restore")
     run_hook_cmds(post_cmds, "post-restore")
   end
-
+  print('Auto save enabled? ', Sessionable.conf.auto_save_enabled)
   Sessionable.session_file_path = string.format("%s%s", Sessionable.get_session_dir(), session_name)
   if Lib.is_readable(Sessionable.session_file_path) then
     Lib.logger.debug("isReadable, calling restore")
