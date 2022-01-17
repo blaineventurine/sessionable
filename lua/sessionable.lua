@@ -1,6 +1,9 @@
--- TODO: add telescope plugin for sessions
--- 
-local Lib = require "sessionable-library"
+-- local Sessionable = require("telescope._extensions.session-scope")
+local Lib = require("sessionable-library")
+
+local themes = require('telescope.themes')
+local actions = require('telescope.actions')
+local action_state = require('telescope.actions.state')
 
 local Sessionable = {
   conf = {
@@ -8,6 +11,10 @@ local Sessionable = {
     enable_last_session = false,
     log_level = "info",
     session_dir = vim.fn.stdpath("config") .. "/sessions/",
+    scope_opts = {
+      theme_conf = { winblend = 10, border = true },
+      previewer = false
+    }
   },
   session_name = "",
   session_file_path = ""
@@ -19,6 +26,7 @@ function Sessionable.setup(config)
   Lib.setup {
     log_level = Sessionable.conf.log_level,
   }
+  -- Sessionable.setup(Lib, Sessionable)
 end
 
 do
@@ -82,7 +90,7 @@ function Sessionable.get_cmds(type)
 end
 
 function Sessionable.AutoSaveSession()
-  if Sessionable.conf.auto_save_enabled then
+  if Sessionable.conf.auto_save_enabled and Sessionable.session_name ~= nil and Sessionable.session_name ~= "" then
     Sessionable.SaveSession(Sessionable.session_name, true)
   end
 end
@@ -130,7 +138,7 @@ function Sessionable.RestoreSession(session_name)
     local post_cmds = Sessionable.get_cmds("post_restore")
     run_hook_cmds(post_cmds, "post-restore")
   end
-
+  print('session name', session_name)
   Sessionable.session_file_path = string.format("%s%s", Sessionable.get_session_dir(), session_name)
 
   if Lib.is_readable(Sessionable.session_file_path) then
@@ -189,5 +197,47 @@ function Sessionable.CreateGitSession()
     Lib.logger.error("ERROR: not in a git repo")
   end
 end
+
+function Sessionable.source_session(prompt_bufnr)
+  local selection = action_state.get_selected_entry()
+  actions.close(prompt_bufnr)
+  Sessionable.AutoSaveSession()
+  vim.cmd("%bd!")
+  Sessionable.RestoreSession(selection.path)
+end
+
+-- TODO: make this refresh the picker and not close it instead
+function Sessionable.delete_session(prompt_bufnr)
+  local selection = action_state.get_selected_entry()
+  actions.close(prompt_bufnr)
+  Sessionable.DeleteSession(selection.path)
+end
+
+function Sessionable.SearchSession() 
+  print('searching session')
+
+  local theme_opts = themes.get_dropdown(Sessionable.conf.scope_opts.theme_conf)
+
+  local opts = {
+    prompt_title = 'Sessions',
+    entry_maker = Lib.make_entry(),
+    cwd = Sessionable.conf.session_dir,
+    -- TOOD: support custom mappings?
+    attach_mappings = function(_, map)
+      actions.select_default:replace(Sessionable.source_session)
+      map("i", "<c-d>", Sessionable.delete_session)
+      return true
+    end,
+  }
+
+  -- local find_files_conf = vim.tbl_deep_extend("force", opts, theme_opts, or {})
+  require("telescope.builtin").find_files(opts)
+end
+
+
+
+
+
+
 
 return Sessionable

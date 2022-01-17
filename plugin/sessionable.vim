@@ -12,7 +12,8 @@ let LuaDisableAutoSave = luaeval('require("sessionable").DisableAutoSave')
 let LuaCreateGitSession = luaeval('require("sessionable").CreateGitSession')
 let LuaAutoSaveSession = luaeval('require("sessionable").AutoSaveSession')
 " let LuaAutoRestoreSession = luaeval('require("sessionable").AutoRestoreSession')
-" let LuaSearchSession = luaeval('require("telescope._extensions.sessionable-lens.main").search_session')
+let LuaSearchSession = luaeval('require("sessionable").SearchSession')
+
 function! CompleteSessions(A,L,P) abort
   return luaeval('require"sessionable".CompleteSessions()')
 endfunction
@@ -21,9 +22,10 @@ endfunction
 command! -nargs=* SaveSession call LuaSaveSession(expand('<args>'))
 command! -nargs=* RestoreSession call LuaRestoreSession(expand('<args>'))
 command! -nargs=* DeleteSession call LuaDeleteSession('<args>')
-command! -nargs=* DisableAutoSave call LuaDisableAutoSave()
-command! -nargs=* CreateGitSession call LuaCreateGitSession()
-" command! -nargs=0 SearchSession call LuaSearchSession()
+command! -nargs=0 DisableAutoSave call LuaDisableAutoSave()
+command! -nargs=0 CreateGitSession call LuaCreateGitSession()
+command! -nargs=0 SearchSession call LuaSearchSession()
+
 aug StdIn
   autocmd!
   autocmd StdinReadPre * let g:in_pager_mode = 1

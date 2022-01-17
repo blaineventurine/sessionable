@@ -105,12 +105,24 @@ function Lib.init_file(file_path)
 end
 
 function Lib.is_readable(file_path)
-  local path, _ = file_path:gsub("\\%%", "%%")
-  local readable = vim.fn.filereadable(vim.fn.expand(path)) == Lib._VIM_TRUE
-
+  local readable = vim.fn.filereadable(vim.fn.expand(file_path)) == Lib._VIM_TRUE
   Lib.logger.debug("==== is_readable", readable)
-
   return readable
+end
+
+function Lib.make_entry()
+  return function(line)
+    return {
+      ordinal = line,
+      value = line,
+      filename = line,
+      cwd = Lib.session_dir,
+      display = function(_)
+        return line
+      end,
+      path = line
+    }
+  end
 end
 
 function Lib.logger.debug(...)
