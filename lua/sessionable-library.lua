@@ -71,7 +71,6 @@ function Lib.append_slash(str)
 end
 
 function Lib.validate_session_dir(session_dir)
-  print('validate session_dir: ', session_dir)
   if Lib.is_empty(session_dir) or vim.fn.expand(session_dir) == vim.fn.expand(Lib.session_dir) then
     return Lib.session_dir
   end
@@ -87,7 +86,7 @@ function Lib.validate_session_dir(session_dir)
     )
     return Lib.session_dir
   else
-    Lib.logger.debug("Using custom session dir: " .. session_dir)
+    Lib.logger.debug("Using session dir: " .. session_dir)
     return session_dir
   end
 end

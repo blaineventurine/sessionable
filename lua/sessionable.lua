@@ -1,4 +1,3 @@
--- local Sessionable = require("telescope._extensions.session-scope")
 local Lib = require("sessionable-library")
 
 local themes = require('telescope.themes')
@@ -8,7 +7,6 @@ local action_state = require('telescope.actions.state')
 local Sessionable = {
   conf = {
     auto_save_enabled = true,
-    enable_last_session = false,
     log_level = "info",
     session_dir = vim.fn.stdpath("config") .. "/sessions/",
     scope_opts = {
@@ -26,24 +24,6 @@ function Sessionable.setup(config)
   Lib.setup {
     log_level = Sessionable.conf.log_level,
   }
-  -- Sessionable.setup(Lib, Sessionable)
-end
-
-do
-  function Sessionable.get_latest_session()
-    local dir = vim.fn.expand(Sessionable.conf.session_dir)
-    local latest_session = { session = nil, last_edited = 0 }
-
-    for _, filename in ipairs(vim.fn.readdir(dir)) do
-      local session = Sessionable.conf.session_dir .. filename
-      local last_edited = vim.fn.getftime(session)
-
-      if last_edited > latest_session.last_edited then
-        latest_session.session = session
-        latest_session.last_edited = last_edited
-      end
-    end
-  end
 end
 
 local function run_hook_cmds(cmds, hook_name)
@@ -90,14 +70,14 @@ function Sessionable.get_cmds(type)
 end
 
 function Sessionable.AutoSaveSession()
-  if Sessionable.conf.auto_save_enabled and Sessionable.session_name ~= nil and Sessionable.session_name ~= "" then
+  if Sessionable.conf.auto_save_enabled and not Lib.is_empty(Sessionable.session_name) then
     Sessionable.SaveSession(Sessionable.session_name, true)
   end
 end
 
 -- Saves the session, overriding if previously existing.
 function Sessionable.SaveSession(session_name, auto)
-  if session_name == nil or session_name == "" then
+  if Lib.is_empty(session_name) then
     session_name = Sessionable.session_name
   end
   
@@ -170,7 +150,7 @@ function Sessionable.DeleteSession(session_name)
   run_hook_cmds(pre_cmds, "pre-delete")
 
   -- make sure to disable autosave if we're deleting the active session
-  if Sessionable.conf.auto_save_enabled and session_name == nil then
+  if Sessionable.conf.auto_save_enabled and Lib.is_empty(session_name) then
     Sessionable.DisableAutoSave()
   end
   -- if a session name is passed in, use it, otherwise use the surrent session
@@ -189,7 +169,7 @@ end
 
 function Sessionable.CreateGitSession()
   local is_git_dir = vim.fn.system("[ -d .git ] && echo .git || git rev-parse --git-dir > /dev/null 2>&1")
-  if is_git_dir ~= nil and is_git_dir ~= "" then
+  if not Lib.is_empty(is_git_dir) then
     local branch = vim.fn.system("git branch --show-current")
     branch = branch:gsub("/", "-")
     Sessionable.SaveSession(branch)
@@ -214,9 +194,7 @@ function Sessionable.delete_session(prompt_bufnr)
 end
 
 function Sessionable.SearchSession() 
-  print('searching session')
-
-  local theme_opts = themes.get_dropdown(Sessionable.conf.scope_opts.theme_conf)
+  -- local theme_opts = themes.get_dropdown(Sessionable.conf.scope_opts.theme_conf)
 
   local opts = {
     prompt_title = 'Sessions',
@@ -229,15 +207,8 @@ function Sessionable.SearchSession()
       return true
     end,
   }
-
   -- local find_files_conf = vim.tbl_deep_extend("force", opts, theme_opts, or {})
   require("telescope.builtin").find_files(opts)
 end
-
-
-
-
-
-
 
 return Sessionable
