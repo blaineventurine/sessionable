@@ -71,12 +71,13 @@ function Lib.append_slash(str)
 end
 
 function Lib.validate_session_dir(session_dir)
-  if Lib.is_empty(session_dir) or vim.fn.expand(session_dir) == vim.fn.expand(Lib.session_dir) then
-    return Lib.session_dir
-  end
 
   if not Lib.ends_with(session_dir, "/") then
     session_dir = session_dir .. "/"
+  end
+
+  if Lib.is_empty(session_dir) or vim.fn.expand(session_dir) == vim.fn.expand(Lib.session_dir) then
+    return Lib.session_dir
   end
 
   if vim.fn.isdirectory(vim.fn.expand(session_dir)) == Lib._VIM_FALSE then
@@ -138,7 +139,7 @@ function Lib.logger.info(...)
 end
 
 function Lib.logger.error(...)
-  error('ERROR: ', ...)
+  error('ERROR: ' .. ..., 2)
 end
 
 return Lib

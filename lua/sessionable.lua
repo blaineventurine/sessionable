@@ -62,7 +62,7 @@ function Sessionable.get_session_dir()
   Lib.init_dir(session_dir)
   Sessionable.conf.session_dir = Lib.validate_session_dir(session_dir)
   Sessionable.validated = true
-  return session_dir
+  return Sessionable.conf.session_dir 
 end
 
 function Sessionable.get_cmds(type)
@@ -81,6 +81,11 @@ function Sessionable.SaveSession(session_name, auto)
     session_name = Sessionable.session_name
   end
   
+  if Lib.is_empty(session_name) then
+      Lib.logger.error("No session name provided")
+      return
+  end
+
   local pre_cmds = Sessionable.get_cmds("pre_save")
   run_hook_cmds(pre_cmds, "pre-save")
   vim.cmd("mks! " .. Sessionable.conf.session_dir  .. session_name)
@@ -118,7 +123,6 @@ function Sessionable.RestoreSession(session_name)
     local post_cmds = Sessionable.get_cmds("post_restore")
     run_hook_cmds(post_cmds, "post-restore")
   end
-  print('session name', session_name)
   Sessionable.session_file_path = string.format("%s%s", Sessionable.get_session_dir(), session_name)
 
   if Lib.is_readable(Sessionable.session_file_path) then
@@ -163,7 +167,7 @@ function Sessionable.DeleteSession(session_name)
     local post_cmds = Sessionable.get_cmds("post_delete")
     run_hook_cmds(post_cmds, "post-delete")
   else
-    Lib.logger.error("Error deleting session " .. Sessionable.session_file_pathj)
+    Lib.logger.error("Error deleting session " .. Sessionable.session_file_path)
   end
 end
 
@@ -174,7 +178,7 @@ function Sessionable.CreateGitSession()
     branch = branch:gsub("/", "-")
     Sessionable.SaveSession(branch)
   else
-    Lib.logger.error("ERROR: not in a git repo")
+    Lib.logger.error("not in a git repo")
   end
 end
 
