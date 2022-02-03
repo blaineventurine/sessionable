@@ -76,6 +76,7 @@ function Sessionable.AutoSaveSession()
 end
 
 -- Saves the session, overriding if previously existing.
+-- TODO: if user passes in :SaveSession newDir/sessionName, validate or create newDir
 function Sessionable.SaveSession(session_name, auto)
   if Lib.is_empty(session_name) then
     session_name = Sessionable.session_name
