@@ -89,6 +89,7 @@ function Sessionable.SaveSession(session_name, auto)
 
   local pre_cmds = Sessionable.get_cmds("pre_save")
   run_hook_cmds(pre_cmds, "pre-save")
+
   vim.cmd("mks! " .. Sessionable.conf.session_dir  .. session_name)
 
   if session_name ~= Sessionable.session_name then
@@ -175,15 +176,18 @@ end
 -- TODO: clean this up, it's a mess
 function Sessionable.CreateGitSession()
   local is_git_dir = vim.fn.system("[ -d .git ] && echo .git || git rev-parse --git-dir > /dev/null 2>&1")
+
   if not Lib.is_empty(is_git_dir) then
-    local branch = vim.fn.system("git branch --show-current")
+    local branch = vim.fn.system("git branch --show-current"):gsub("/", "-")
     local git_dir = vim.fn.system("basename $(git rev-parse --show-toplevel)")
     local project_dir = vim.fn.system("basename " .. git_dir)
+
     project_dir = string.gsub(project_dir, "^%s*(.-)%s*$", "%1") .. "/"
     local session_dir = Sessionable.get_session_dir() .. project_dir
+
     Lib.init_dir(session_dir)
-    branch = branch:gsub("/", "-")
-    Sessionable.SaveSession(string.format("%s%s", project_dir, branch))
+    Sessionable.conf.session_dir = session_dir
+    Sessionable.SaveSession(branch)
   else
     Lib.logger.error("not in a git repo")
   end
