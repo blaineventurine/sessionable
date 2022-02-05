@@ -58,9 +58,8 @@ function Sessionable.get_session_dir()
     return Sessionable.conf.session_dir
   end
 
-  local session_dir = vim.g["session_dir"] or Sessionable.conf.session_dir
-  Lib.init_dir(session_dir)
-  Sessionable.conf.session_dir = Lib.validate_session_dir(session_dir)
+  Lib.init_dir(Sessionable.conf.session_dir)
+  Sessionable.conf.session_dir = Lib.validate_session_dir(Sessionable.conf.session_dir)
   Sessionable.validated = true
   return Sessionable.conf.session_dir 
 end
@@ -186,8 +185,7 @@ function Sessionable.CreateGitSession()
     local session_dir = Sessionable.get_session_dir() .. project_dir
 
     Lib.init_dir(session_dir)
-    Sessionable.conf.session_dir = session_dir
-    Sessionable.SaveSession(branch)
+    Sessionable.SaveSession(project_dir .. branch)
   else
     Lib.logger.error("not in a git repo")
   end
