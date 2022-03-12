@@ -1,5 +1,4 @@
 local Lib = require("sessionable-library")
-
 local themes = require('telescope.themes')
 local actions = require('telescope.actions')
 local action_state = require('telescope.actions.state')
@@ -20,7 +19,7 @@ local Sessionable = {
 
 function Sessionable.setup(config)
   Sessionable.conf = Lib.Config.normalize(config, Sessionable.conf)
-  Lib.session_dir = Sessionable.conf.session_dir
+  Lib.session_dir = Sessionable.get_session_dir()
   Lib.setup {
     log_level = Sessionable.conf.log_level,
   }
@@ -61,7 +60,7 @@ function Sessionable.get_session_dir()
   Lib.init_dir(Sessionable.conf.session_dir)
   Sessionable.conf.session_dir = Lib.validate_session_dir(Sessionable.conf.session_dir)
   Sessionable.validated = true
-  return Sessionable.conf.session_dir 
+  return Sessionable.conf.session_dir
 end
 
 function Sessionable.get_cmds(type)
@@ -89,7 +88,7 @@ function Sessionable.SaveSession(session_name, auto)
   local pre_cmds = Sessionable.get_cmds("pre_save")
   run_hook_cmds(pre_cmds, "pre-save")
 
-  vim.cmd("mks! " .. Sessionable.conf.session_dir  .. session_name)
+  vim.cmd("mks! " .. Sessionable.get_session_dir() .. session_name)
 
   if session_name ~= Sessionable.session_name then
     Sessionable.session_name = session_name
@@ -212,7 +211,7 @@ function Sessionable.SearchSession()
   local opts = {
     prompt_title = 'Sessions',
     entry_maker = Lib.make_entry(),
-    cwd = Sessionable.conf.session_dir,
+    cwd = Sessionable.get_session_dir(),
     -- TOOD: support custom mappings?
     attach_mappings = function(_, map)
       actions.select_default:replace(Sessionable.source_session)
