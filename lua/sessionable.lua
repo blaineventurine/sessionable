@@ -79,7 +79,7 @@ function Sessionable.SaveSession(session_name, auto)
   if Lib.is_empty(session_name) then
     session_name = Sessionable.session_name
   end
-  
+
   if Lib.is_empty(session_name) then
       Lib.logger.error("No session name provided")
       return
@@ -105,7 +105,7 @@ function Sessionable.RestoreSession(session_name)
     local pre_cmds = Sessionable.get_cmds("pre_restore")
     run_hook_cmds(pre_cmds, "pre-restore")
 
-    local cmd = "source " .. Sessionable.session_file_path 
+    local cmd = "source " .. Sessionable.session_file_path
     local success, result = pcall(vim.cmd, cmd)
 
     if not success then
@@ -205,7 +205,7 @@ function Sessionable.delete_session(prompt_bufnr)
   Sessionable.DeleteSession(selection.path)
 end
 
-function Sessionable.SearchSession() 
+function Sessionable.SearchSession()
   -- local theme_opts = themes.get_dropdown(Sessionable.conf.scope_opts.theme_conf)
 
   local opts = {

@@ -1,12 +1,19 @@
 # Sessionable
+<!--toc:start-->
+- [Sessionable](#sessionable)
+- [Config](#config)
+- [Commands](#commands)
+<!--toc:end-->
 
 ## Config
+
 ```lua
   conf = {
     auto_save_enabled = true,
     enable_last_session = false,
     log_level = "info",
     session_dir = vim.fn.stdpath("config") .. "/sessions/",
+    {hook_name}_cmds = {"{hook_command1}", "{hook_command2}"}
   },
 ```
 
@@ -19,6 +26,7 @@ require("sessionable").setup({
 ```
 
 To add the current session name (if any) to [Feline](https://github.com/feline-nvim/feline.nvim)
+
 ```lua
 components.active[3][11] = {
   provider = function()
@@ -33,7 +41,40 @@ components.active[3][11] = {
 }
 ```
 
-## Commands 
+## Hooks
+
+Command hooks exist in the format: {hook_name}
+
+{pre_save}: executes before a session is saved
+{post_save}: executes after a session is saved
+{pre_restore}: executs before a session is restored
+{post_restore}: executs after a session is restored
+{pre_delete}: executs before a session is deleted
+{post_delete}: executs after a session is deleted
+
+```lua
+require('sessionable').setup {
+    {hook_name}_cmds = {"{hook_command1}", "{hook_command2}"}
+}
+```
+
+Hooks can also be lua functions
+
+For example to update the directory of the session in nvim-tree:
+
+```lua
+local function restore_nvim_tree()
+    local nvim_tree = require('nvim-tree')
+    nvim_tree.change_dir(vim.fn.getcwd())
+    nvim_tree.refresh()
+end
+
+require('sessionable').setup {
+    {hook_name}_cmds = {"{vim_cmd_1}", restore_nvim_tree, "{vim_cmd_2}"}
+}
+```
+
+## Commands
 
 ```lua
 :SaveSesson -- saves the current session in the session_dir.
