@@ -1,23 +1,37 @@
 # Sessionable
+
 <!--toc:start-->
+- [Installion](#installation)
 - [Sessionable](#sessionable)
 - [Config](#config)
 - [Commands](#commands)
 <!--toc:end-->
 
-## Config
+## Installation
+
+This plugin requires [Telescope](https://www.github.com/nvim-telescope/telescope.nvim)
 
 ```lua
-  conf = {
-    auto_save_enabled = true,
-    enable_last_session = false,
-    log_level = "info",
-    session_dir = vim.fn.stdpath("config") .. "/sessions/",
-    {hook_name}_cmds = {"{hook_command1}", "{hook_command2}"}
-  },
+use { 'git@github.com:blaineventurine/sessionable',
+      requires = { 'nvim-telescope/telescope.nvim' },
+    }
 ```
 
-To modify defaults, pass them into 
+## Config
+
+Defaults:
+
+```lua
+{
+  auto_save_enabled = true,
+  enable_last_session = false,
+  log_level = "info",
+  session_dir = vim.fn.stdpath("config") .. "/sessions/",
+  {hook_name}_cmds = {"{hook_command1}", "{hook_command2}"}
+}
+```
+
+To modify defaults, pass them into
 
 ```lua
 require("sessionable").setup({
@@ -30,7 +44,7 @@ To add the current session name (if any) to [Feline](https://github.com/feline-n
 ```lua
 components.active[3][11] = {
   provider = function()
-    return require('sessionable').session_name 
+    return require('sessionable').session_name
   end,
   hl = {
     fg = 'green',
@@ -77,11 +91,22 @@ require('sessionable').setup {
 ## Commands
 
 ```lua
-:SaveSesson -- saves the current session in the session_dir.
-:SaveSession mySessionName -- creates a session in the session_dir and switches to it being the active session.
-:RestoreSession -- restores a previously saved session by name.
-:DeleteSession -- deletes currently active session 
-:DeleteSession mySessionName -- deletes a session by name 
-:CreateGitSession -- creates a new session using the repo name as a subfolder and a branch name as the session name
-:DisableAutoSave -- turns off the autosave on exit functionality, will be overridden by the value passed into the config on next startup
+-- saves the current session in the session_dir.
+:SaveSesson
+-- creates a session in the session_dir and switches to it being the active session.
+:SaveSession mySessionName
+-- restores a previously saved session by name.
+:RestoreSession
+-- deletes currently active session
+:DeleteSession
+-- deletes a session by name
+:DeleteSession mySessionName
+-- creates a new session using the repo name as a subfolder 
+-- and a branch name as the session name
+:CreateGitSession
+-- turns off the autosave on exit functionality
+-- will be overridden by the value passed into the config on next startup
+:DisableAutoSave
+-- uses Telescope to browse existing sessions
+:SearchSessions
 ```
