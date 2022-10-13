@@ -12,7 +12,7 @@
 This plugin requires [Telescope](https://www.github.com/nvim-telescope/telescope.nvim)
 
 ```lua
-use { 'git@github.com:blaineventurine/sessionable',
+use { 'blaineventurine/sessionable',
       requires = { 'nvim-telescope/telescope.nvim' },
     }
 ```
